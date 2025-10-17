@@ -23,7 +23,7 @@ embed_dim = 512
 num_heads = 8
 FFN_depth = 2048
 encoder_layers = 6
-epochs = 2000
+epochs = 1000
 lr = 3e-4
 
 def get_batch(X_source, Y_source, block_size, batch_size, device):

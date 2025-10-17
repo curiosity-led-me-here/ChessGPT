@@ -1,7 +1,6 @@
 import torch, chess, torch.nn.functional as F
 from model_fluidgpt import GPT
-from input_loader import stoi, itos  # string↔id mappings
-from train import vocab_size, block_size, embed_dim, num_heads, FFN_depth, encoder_layers 
+from hyperparams import stoi, itos, block_size,vocab_size,embed_dim,num_heads,FFN_depth,encoder_layers
 
 device = "mps" if torch.backends.mps.is_available() else "cuda" if torch.cuda.is_available() else "cpu"
 
@@ -27,7 +26,6 @@ def generate(model, prompt, max_new_tokens=1, temperature=1.0, top_k=None):
         tokens = torch.cat((tokens, next_token), dim=1)
     return next_token.item()
 
-# === Gameplay loop ===
 board = chess.Board()
 game_tokens = []
 
@@ -47,9 +45,10 @@ while board.outcome() is None:
         token_id = generate(model, prompt=game_tokens)
         uci = itos[token_id]
         move = chess.Move.from_uci(uci)
+        san_move = board.san(move)
         if move in board.legal_moves:
             board.push(move)
-            print(f"Model plays: {uci}")
+            print(f"Model plays: {san_move}")
             game_tokens.append(token_id)
             break
     else:

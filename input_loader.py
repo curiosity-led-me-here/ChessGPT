@@ -1,5 +1,4 @@
 import chess
-import chess.pgn
 import json
 import torch
 
@@ -44,3 +43,10 @@ print(f"Loaded {len(games_2d)} games.")
 tokenized_moves = tokenize_games(games_2d)
 data, stoi, itos = numerical_tokenization(tokenized_moves)    
     
+'''
+with open("stoi.json", "w", encoding="utf-8") as f:
+    json.dump(stoi, f, ensure_ascii=False, indent=2)
+
+with open("itos.json", "w", encoding="utf-8") as f:
+    json.dump(itos, f, ensure_ascii=False, indent=2)
+'''

@@ -2,7 +2,8 @@ import torch
 import torch.nn.functional as F
 import torch.optim as optim
 from model_fluidgpt import GPT
-from input_loader import data, stoi, itos
+from input_loader import data
+from hyperparams import stoi, itos, block_size, batch_size,vocab_size,embed_dim,num_heads,FFN_depth,encoder_layers,epochs,lr
 
 encode = lambda seq: [stoi[s] for s in seq]
 decode = lambda ids: [itos[i] for i in ids]
@@ -15,16 +16,6 @@ split_idx = int(len(spl_idxs) * split_ratio)
 X_train, X_val = X[:spl_idxs[split_idx]], X[spl_idxs[split_idx]:]
 Y_train, Y_val = Y[:spl_idxs[split_idx]], Y[spl_idxs[split_idx]:]
 
-# ===== Hyperparams =====
-vocab_size = len(stoi)
-batch_size = 100
-block_size = 80
-embed_dim = 512
-num_heads = 8
-FFN_depth = 2048
-encoder_layers = 6
-epochs = 1000
-lr = 3e-4
 
 def get_batch(X_source, Y_source, block_size, batch_size, device):
     Xb, Yb = [], []

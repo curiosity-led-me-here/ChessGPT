@@ -15,8 +15,9 @@ def positional_encoding(seq_len, d_model, device='cpu'):
     return pe
 
 class GPT(nn.Module):
-  def __init__(self, vocab_size, block_size, embed_dim, num_heads, FFN_depth, encoder_layers):
+  def __init__(self, vocab_size, block_size, embed_dim, num_heads, FFN_depth, encoder_layers, dropout=0.1):
     super().__init__()
+    self.dropout = nn.Dropout(dropout)
     self.block_size = block_size
     self.FFN_depth = FFN_depth
     self.num_heads = num_heads
@@ -36,13 +37,15 @@ class GPT(nn.Module):
     self.ffn = nn.Sequential(
         nn.Linear(embed_dim, self.FFN_depth),
         nn.GELU(),
-        nn.Linear(self.FFN_depth, embed_dim)
+        nn.Linear(self.FFN_depth, embed_dim),
+        nn.Dropout(dropout)
     )
   
   def layer_1(self, X):
     X = self.token_emb(X) * self.embed_dim ** 0.5      # (B, n) --> (B, n, d)
     T = X.shape[1]
     X = X + self.pos_emb[:T,:]
+    X = self.dropout(X)
     return X                                                    # (B, n, d)    
 
   def single_head(self, X):
@@ -68,7 +71,9 @@ class GPT(nn.Module):
     attention_probs = F.softmax(attention_scores, dim=-1)
     out = attention_probs @ V
     out = out.transpose(1, 2).contiguous().view(B, T, D)
-    return self.Wo(out)
+    out = self.Wo(out)
+    out = self.dropout(out)
+    return out
 
   def add_and_layernorm(self, layer_1, output, LN):
     residue = layer_1 + output

@@ -15,7 +15,7 @@ def positional_encoding(seq_len, d_model, device='cpu'):
     return pe
 
 class GPT(nn.Module):
-  def __init__(self, vocab_size, block_size, embed_dim, num_heads, FFN_depth, encoder_layers, dropout=0.1):
+  def __init__(self, vocab_size, block_size, embed_dim, num_heads, FFN_depth, encoder_layers, dropout=0.2):
     super().__init__()
     self.dropout = nn.Dropout(dropout)
     self.block_size = block_size

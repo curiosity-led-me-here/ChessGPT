@@ -1,0 +1,8 @@
+Problems:
+
+1. carlsen moves arent handpicked. The input data is just a mix of moves of all players.
+2. uneven input dim.
+
+Solutions:
+
+1. Whichever 

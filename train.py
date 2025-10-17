@@ -53,7 +53,6 @@ def train_model():
     scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=epochs)
 
     for epoch in range(epochs):
-        # Training step
         model.train()
         x_batch, y_batch = get_batch(X_train, Y_train, block_size, batch_size, device)
         logits = model(x_batch)
@@ -64,7 +63,6 @@ def train_model():
         optimizer.step()
         scheduler.step()
 
-        # Validation step
         if epoch % 50 == 0 or epoch == epochs - 1:
             model.eval()
             with torch.no_grad():

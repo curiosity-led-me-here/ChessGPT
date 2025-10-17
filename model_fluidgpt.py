@@ -3,10 +3,10 @@ import torch.nn as nn
 from torch.nn import functional as F
 
 def positional_encoding(seq_len, d_model, device='cpu'):
-    pos = torch.arange(seq_len, dtype=torch.float32, device=device).unsqueeze(1)  # (T, 1)
-    i = torch.arange(d_model // 2, dtype=torch.float32, device=device).unsqueeze(0)  # (1, d/2)
-    denom = torch.pow(10000, (2 * i) / d_model)  # (1, d/2)
-    angles = pos / denom                         # (T, d/2)
+    pos = torch.arange(seq_len, dtype=torch.float32, device=device).unsqueeze(1)  
+    i = torch.arange(d_model // 2, dtype=torch.float32, device=device).unsqueeze(0)  
+    denom = torch.pow(10000, (2 * i) / d_model)  
+    angles = pos / denom                         
 
     pe = torch.zeros((seq_len, d_model), device=device)
     pe[:, 0::2] = torch.sin(angles)
@@ -42,11 +42,11 @@ class GPT(nn.Module):
     )
   
   def layer_1(self, X):
-    X = self.token_emb(X) * self.embed_dim ** 0.5      # (B, n) --> (B, n, d)
+    X = self.token_emb(X) * self.embed_dim ** 0.5      
     T = X.shape[1]
     X = X + self.pos_emb[:T,:]
     X = self.dropout(X)
-    return X                                                    # (B, n, d)    
+    return X                                                    
 
   def single_head(self, X):
     q = self.Wq(X)
@@ -93,12 +93,10 @@ class GPT(nn.Module):
     return Hl
 
   def decoder_layer(self, y, Hl1):
-    # 1. Masked self-attention (decoder-to-decoder)
     q1, k1, v1 = self.single_head(y)
     self_attn_out = self.multi_head(q1, k1, v1, mode="decode")
     x = self.add_and_layernorm(y, self_attn_out, self.LN1)
 
-    # 2. Cross-attention (decoder-to-encoder)
     q2 = self.Wq(x)
     k2 = self.Wkd(Hl1)
     v2 = self.Wvd(Hl1)
@@ -118,12 +116,10 @@ class GPT(nn.Module):
     return y
 
   def forward(self, x):
-    # Autoregressive forward (decoder-only)
     x = self.token_emb(x) * self.embed_dim ** 0.5
     T = x.shape[1]
     x = x + self.pos_emb[:x.size(1), :].unsqueeze(0)
     for _ in range(self.encoder_layers):
-        # Use causal (masked) self-attention for each layer
         q, k, v = self.single_head(x)
         attn_out = self.multi_head(q, k, v, mode="decode")
         x = self.add_and_layernorm(x, attn_out, self.LN1)

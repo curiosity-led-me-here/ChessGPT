@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"name": "ChessGPT",
+			"path": "."
+		},
+		{
+			"name": "output_magnus",
+			"path": "../../Downloads/chess-games-dataset-main/output_magnus"
+		}
+	],
+	"settings": {}
+}
